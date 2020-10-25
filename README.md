@@ -107,3 +107,6 @@ ZIP the files in this repository and upload as a plugin. Enter Twilio credential
 - BuddyBoss Platform
 - WP SMS Twilio Core
 
+### Sound Effects
+
+From http://freesoundeffect.net/
