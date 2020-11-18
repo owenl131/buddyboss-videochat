@@ -1,5 +1,7 @@
 # Buddyboss Videochat
 
+Plugin to embed a Video Chat function based on Twilio Programmable Video within a BuddyBoss Wordpress Portal. Contact me for assistance to build this into your website.
+
 ## Changes
 
 Insert in `bp-templates/bp-nouveau/buddypress/common/js-templates/messages/parts/bp-messages-single-header.php`:
