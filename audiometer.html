@@ -1,0 +1,33 @@
+<audio id="player" controls></audio>
+<meter id="meter" value="0.6">60%</meter>
+<button onclick="start();">Start</button>
+<script>
+function start() {
+	const audioContext = new AudioContext();
+	audioContext.audioWorklet.addModule('volumeprocessor.js').then(() => {
+		console.log("hello");
+		const volumeNode = new AudioWorkletNode(audioContext, 'volume-processor');
+		volumeNode.port.onmessage  = event => {
+            if (event.data.volume) {
+				console.log(event);
+                document.getElementById("meter").value = event.data.volume;
+			}
+        }
+		const player = document.getElementById('player');
+		const handleSuccess = function(stream) {
+			let microphone = audioContext.createMediaStreamSource(stream);
+			microphone.connect(volumeNode).connect(audioContext.destination);
+			if (window.URL) {
+				player.srcObject = stream;
+			} else {
+				player.src = stream;
+			}
+		};
+		navigator
+			.mediaDevices
+			.getUserMedia({ audio: true, video: false })
+			.then(handleSuccess);
+
+	});
+}
+</script>

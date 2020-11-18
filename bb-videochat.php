@@ -14,7 +14,7 @@ function bbvideo_settings_init() {
 	register_setting('bbvideo', 'bbvideo_options');
 	add_settings_section(
 		'bbvideo_credentials',
-		'Some text',
+		'Twilio API Configuration',
 		'bbvideo_credentials_callback',
 		'bbvideo'
 	);
@@ -51,6 +51,17 @@ function bbvideo_settings_init() {
             'class'             => 'bbvideo_row',
 		)
 	);
+	add_settings_field(
+		'bbvideo_api_token',
+		'API Token',
+		'bbvideo_api_token_callback',
+		'bbvideo',
+		'bbvideo_credentials',
+		array(
+            'label_for'         => 'bbvideo_api_token',
+            'class'             => 'bbvideo_row',
+		)
+	);
 }
 add_action('admin_init', 'bbvideo_settings_init');
 
@@ -77,7 +88,17 @@ function bbvideo_api_secret_callback( $args ) {
 	?>
 	<input id="<?php echo esc_attr($args['label_for']); ?>"
 		name="bbvideo_options[<?php echo esc_attr($args['label_for']); ?>]"
-		type='text' value='<?php echo esc_attr( $options['bbvideo_api_secret'] ); ?>'
+		type='password' value='<?php echo esc_attr( $options['bbvideo_api_secret'] ); ?>'
+		>
+	<?php 
+}
+
+function bbvideo_api_token_callback( $args ) {
+	$options = get_option('bbvideo_options');
+	?>
+	<input id="<?php echo esc_attr($args['label_for']); ?>"
+		name="bbvideo_options[<?php echo esc_attr($args['label_for']); ?>]"
+		type='password' value='<?php echo esc_attr( $options['bbvideo_api_token'] ); ?>'
 		>
 	<?php 
 }
@@ -170,21 +191,66 @@ function videochat_shortcode() {
 		echo "Invalid room";
 		return;
 	}
+    $recipients = BP_Messages_Thread::get_recipients($thread->thread_id);
+    $recipientCount = count($recipients);
+    $roomtype = $recipientCount == 2 ? "go" : "peer-to-peer";
+    $roomname = "dbfilap" . $roomname . $roomtype;
+
 	// generate access token
 	$twilioAccountSid = $options['bbvideo_account_sid'];
     $twilioApiKey = $options['bbvideo_api_key'];
     $twilioApiSecret = $options['bbvideo_api_secret'];
+    $twilioApiToken = $options['bbvideo_api_token'];
+	
+    $ch = curl_init();
+    $data = http_build_query([
+        'UniqueName' => $roomname,
+        'PageSize' => 20
+    ]);
+    $url = "https://video.twilio.com/v1/Rooms?" . $data;
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_USERPWD, "$twilioAccountSid:$twilioApiToken");
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); 
+    $response = json_decode(curl_exec($ch), true);
+    curl_close($ch);
+    if (count($response['rooms']) == 0) {
+        $url = "https://video.twilio.com/v1/Rooms";
+        //The data you want to send via POST
+        $fields = [
+            'UniqueName' => $roomname,
+            'Type' => $roomtype,
+        ];
+        //url-ify the data for the POST
+        $fields_string = http_build_query($fields);
+        //open connection
+        $ch = curl_init();
+        //set the url, number of POST vars, POST data
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $fields_string);
+        curl_setopt($ch, CURLOPT_USERPWD, "$twilioAccountSid:$twilioApiToken");
+        //So that curl_exec returns the contents of the cURL; rather than echoing it
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); 
+        $room = json_decode(curl_exec($ch), true);
+        curl_close($ch);
+    } else {
+        $room = $response['rooms'][0];
+    }
+    
 	$token = new AccessToken(
 		$twilioAccountSid,
 		$twilioApiKey,
 		$twilioApiSecret, 
 		3600,
 		$identity);
+
 	$videoGrant = new VideoGrant();
-	$videoGrant->setRoom($roomname);
-	$token->addGrant($videoGrant);
+	// $videoGrant->setRoom($roomname);
+	$videoGrant->setRoom($room['sid']);
+    $token->addGrant($videoGrant);
 	?>
 	<input name="room" id="video-room" type="hidden" value="<?php echo $roomname; ?>">
+    <input name="room-sid" id="video-room-sid" type="hidden" value="<?php echo $room['sid']; ?>">
 	<input name="token" id="video-user-token" type="hidden" value="<?php echo $token->toJWT(); ?>">
 	<div id="local-media-div"></div>
 	<div id="remote-media-div"></div>

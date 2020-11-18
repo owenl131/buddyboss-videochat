@@ -1,0 +1,12 @@
+<video id="video" autoplay></video>
+<script>
+function start() {
+	navigator.mediaDevices.getDisplayMedia().then((stream) => {
+        console.log(stream);
+        document.getElementById('video').srcObject = stream;
+    });
+}
+window.onload = () => {
+    start();
+};
+</script>
