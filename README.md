@@ -64,7 +64,7 @@ Code added:
           {
             thread_id : this.options.thread.get( 'id' ),
             content   : "<span class=\"gray avatar-wrap\"><b>" + 
-                        $(this).context.title.split(' – ')[1] +
+                        document.title.split(' – ')[1] +
                         "</b> is inviting you to a video call!</span>" + 
                         "<a class=\"small button outline\" target=\"_blank\" href=\"/video-chat/?id=" + 
                         this.options.thread.get('id') + 
