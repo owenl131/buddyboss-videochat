@@ -6,7 +6,7 @@ Plugin to embed a Video Chat function based on Twilio Programmable Video within 
 
 Insert in `bp-templates/bp-nouveau/buddypress/common/js-templates/messages/parts/bp-messages-single-header.php`:
 
-```
+```php
         ...
       </dt>
       <dd>
@@ -14,9 +14,13 @@ Insert in `bp-templates/bp-nouveau/buddypress/common/js-templates/messages/parts
       </dd>
     </dl>
     <# } #>
+```
 
-    <input style="margin-left:auto" type="submit" value="Video Call" class="small" id="send_vc_notice_button">
+<pre>
+    <b>&lt;input style="margin-left:auto" type="submit" value="Video Call" class="small" id="send_vc_notice_button"\&gt;</b>
+</pre>
 
+```php
     <div class="actions" style="margin-left: 20px" >
       <?php
         if ( bp_current_user_can( 'bp_moderate' ) ) {
@@ -28,13 +32,15 @@ Insert in `bp-templates/bp-nouveau/buddypress/common/js-templates/messages/parts
 
 Insert in `buddyboss-platform/bp-templates/bp-nouveau/js/buddypress-messages.js`:
 
-```
+```javascript
       ...
       addEditor: function() {
         // Load the Editor.
         this.views.add( '#bp-message-content', new bp.Views.messageEditor() );
       },
+```
 
+```javascript
       sendCallNotice: function(event) {
         var errors = [];
         event.preventDefault();
@@ -82,7 +88,9 @@ Insert in `buddyboss-platform/bp-templates/bp-nouveau/js/buddypress-messages.js`
 
         $( '#bp-message-thread-list' ).animate( { scrollTop: $( '#bp-message-thread-list' ).prop( 'scrollHeight' )}, 0 );
       },
+```
 
+```javascript
       sendReply: function( event ) {
         var errors = [];
         event.preventDefault();
