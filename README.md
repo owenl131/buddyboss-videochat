@@ -6,6 +6,7 @@ Plugin to embed a Video Chat function based on Twilio Programmable Video within 
 
 Insert in `bp-templates/bp-nouveau/buddypress/common/js-templates/messages/parts/bp-messages-single-header.php`:
 
+Code before:
 ```php
         ...
       </dt>
@@ -16,10 +17,12 @@ Insert in `bp-templates/bp-nouveau/buddypress/common/js-templates/messages/parts
     <# } #>
 ```
 
+Code added:
 ```php
     <input style="margin-left:auto" type="submit" value="Video Call" class="small" id="send_vc_notice_button"\>
 ```
 
+Code after:
 ```php
     <div class="actions" style="margin-left: 20px" >
       <?php
@@ -32,6 +35,7 @@ Insert in `bp-templates/bp-nouveau/buddypress/common/js-templates/messages/parts
 
 Insert in `buddyboss-platform/bp-templates/bp-nouveau/js/buddypress-messages.js`:
 
+Code before:
 ```javascript
       ...
       addEditor: function() {
@@ -40,6 +44,7 @@ Insert in `buddyboss-platform/bp-templates/bp-nouveau/js/buddypress-messages.js`
       },
 ```
 
+Code added:
 ```javascript
       sendCallNotice: function(event) {
         var errors = [];
@@ -90,6 +95,7 @@ Insert in `buddyboss-platform/bp-templates/bp-nouveau/js/buddypress-messages.js`
       },
 ```
 
+Code after:
 ```javascript
       sendReply: function( event ) {
         var errors = [];
