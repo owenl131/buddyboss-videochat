@@ -16,9 +16,9 @@ Insert in `bp-templates/bp-nouveau/buddypress/common/js-templates/messages/parts
     <# } #>
 ```
 
-<pre>
-    <b>&lt;input style="margin-left:auto" type="submit" value="Video Call" class="small" id="send_vc_notice_button"\&gt;</b>
-</pre>
+```php
+    <input style="margin-left:auto" type="submit" value="Video Call" class="small" id="send_vc_notice_button"\>
+```
 
 ```php
     <div class="actions" style="margin-left: 20px" >
