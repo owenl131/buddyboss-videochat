@@ -62,6 +62,17 @@ function bbvideo_settings_init() {
             'class'             => 'bbvideo_row',
 		)
 	);
+	add_settings_field(
+		'bbvideo_prefix',
+		'Room Prefix',
+		'bbvideo_prefix_callback',
+		'bbvideo',
+		'bbvideo_credentials',
+		array(
+            'label_for'         => 'bbvideo_prefix',
+            'class'             => 'bbvideo_row',
+		)
+	);
 }
 add_action('admin_init', 'bbvideo_settings_init');
 
@@ -109,6 +120,16 @@ function bbvideo_account_sid_callback( $args ) {
 	<input id="<?php echo esc_attr($args['label_for']); ?>"
 		name="bbvideo_options[<?php echo esc_attr($args['label_for']); ?>]"
 		type='text' value='<?php echo esc_attr( $options['bbvideo_account_sid'] ); ?>'
+		>
+	<?php 
+}
+
+function bbvideo_prefix_callback( $args ) {
+	$options = get_option('bbvideo_options');
+	?>
+	<input id="<?php echo esc_attr($args['label_for']); ?>"
+		name="bbvideo_options[<?php echo esc_attr($args['label_for']); ?>]"
+		type='text' value='<?php echo esc_attr( $options['bbvideo_prefix'] ); ?>'
 		>
 	<?php 
 }
@@ -191,17 +212,19 @@ function videochat_shortcode() {
 		echo "Invalid room";
 		return;
 	}
-    $recipients = BP_Messages_Thread::get_recipients($thread->thread_id);
-    $recipientCount = count($recipients);
-    $roomtype = $recipientCount == 2 ? "go" : "peer-to-peer";
-    $roomname = "dbfilap" . $roomname . $roomtype;
-
+    
 	// generate access token
 	$twilioAccountSid = $options['bbvideo_account_sid'];
     $twilioApiKey = $options['bbvideo_api_key'];
     $twilioApiSecret = $options['bbvideo_api_secret'];
     $twilioApiToken = $options['bbvideo_api_token'];
-	
+    $prefix = $options['bbvideo_prefix'];
+    
+    $recipients = BP_Messages_Thread::get_recipients($thread->thread_id);
+    $recipientCount = count($recipients);
+    $roomtype = $recipientCount == 2 ? "go" : "peer-to-peer";
+    $roomname = $prefix . $roomname . $roomtype;
+
     $ch = curl_init();
     $data = http_build_query([
         'UniqueName' => $roomname,
