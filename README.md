@@ -4,6 +4,8 @@ Plugin to embed a Video Chat function based on Twilio Programmable Video within 
 
 ## Changes
 
+### Part 1
+
 Insert in `bp-templates/bp-nouveau/buddypress/common/js-templates/messages/parts/bp-messages-single-header.php`:
 
 Code before:
@@ -32,6 +34,8 @@ Code after:
             ...
 ```
 
+
+### Part 2
 
 Insert in `buddyboss-platform/bp-templates/bp-nouveau/js/buddypress-messages.js`:
 
@@ -106,6 +110,51 @@ Code after:
         }
         ...
 ```
+
+### Part 3
+
+Insert in `buddyboss-platform/bp-templates/bp-nouveau/js/buddypress-messages.js`:
+
+Code before:
+```
+                                this.views.add(
+					'#bp-message-load-more',
+					new bp.Views.userMessagesLoadMore(
+						{
+							collection: this.collection,
+							thread: this.options.thread,
+							userMessage: this
+							}
+					)
+				);
+			},
+
+			events: {
+				'click #send_reply_button' : 'sendReply',
+```
+
+Code added:
+```
+                                'click #send_vc_notice_button' : 'sendCallNotice'
+```
+
+Code after:
+```
+                        },
+
+			requestMessages: function() {
+				var data 					   = {};
+				this.options.collection.before = null;
+
+				this.collection.reset();
+
+				this.loadingFeedback = new bp.Views.MessagesLoading();
+				this.views.add( '#bp-message-content',this.loadingFeedback );
+```
+
+### Part 4
+
+Copy the whole contents of `buddyboss-platform/bp-templates/bp-nouveau/js/buddypress-messages.js` to `buddyboss-platform/bp-templates/bp-nouveau/js/buddypress-messages.min.js`
 
 ## Packaging
 
